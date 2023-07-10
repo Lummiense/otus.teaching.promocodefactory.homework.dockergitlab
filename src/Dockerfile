@@ -1,19 +1,12 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /app
+COPY . .
 EXPOSE 80
 EXPOSE 443
+RUN dotnet restore
+RUN dotnet publish -c Release -o out
 
-
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
-WORKDIR /src
-COPY . ./
-RUN dotnet restore "Otus.Teaching.PromoCodeFactory.sln"
-RUN dotnet build "Otus.Teaching.PromoCodeFactory.sln" -c Release -o /app/build
-
-FROM build as publish
-RUN dotnet publish "Otus.Teaching.PromoCodeFactory.WebHost/Otus.Teaching.PromoCodeFactory.WebHost.csproj" -c Release -o /app/publish
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish ./
+COPY --from=build /app/out ./
 ENTRYPOINT ["dotnet", "Otus.Teaching.PromoCodeFactory.WebHost.dll"]
