@@ -5,7 +5,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: src/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
       - 80:80
     environment:
@@ -23,4 +23,5 @@ services:
     ports: 
         - "5432:5432"
     volumes: # persist data even if container shuts down
-        - postgres_data:/var/lib/postgresql/data/
+        - ./db_data:/application 
+        #postgres_data:/var/lib/postgresql/data/
